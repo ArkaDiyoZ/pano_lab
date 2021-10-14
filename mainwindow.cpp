@@ -4,6 +4,13 @@
 #include <QProcess>
 #include <QDebug>
 
+#include <QFile>
+#include <QByteArray>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QDebug>
+
+
 /* Мозаичное панно. На форме находится квадрат 5х5 из QLabel.
  * Нажатие на каждую позволяет выбрать изображение для неё.
  * В файле хранятся изображения назначенные  каждому из QLabel.
@@ -16,31 +23,16 @@
   {
       ui->setupUi(this);
 
-      connect(ui->pushButton, SIGNAL (released()),this, SLOT (btnPressed()));
-      connect(ui->pushButton_2, SIGNAL (released()),this, SLOT (btnPressed()));
-      connect(ui->pushButton_3, SIGNAL (released()),this, SLOT (btnPressed()));
-      connect(ui->pushButton_4, SIGNAL (released()),this, SLOT (btnPressed()));
-      connect(ui->pushButton_5, SIGNAL (released()),this, SLOT (btnPressed()));
-      connect(ui->pushButton_6, SIGNAL (released()),this, SLOT (btnPressed()));
-      connect(ui->pushButton_7, SIGNAL (released()),this, SLOT (btnPressed()));
-      connect(ui->pushButton_8, SIGNAL (released()),this, SLOT (btnPressed()));
-      connect(ui->pushButton_9, SIGNAL (released()),this, SLOT (btnPressed()));
-      connect(ui->pushButton_10, SIGNAL (released()),this, SLOT (btnPressed()));
-      connect(ui->pushButton_11, SIGNAL (released()),this, SLOT (btnPressed()));
-      connect(ui->pushButton_12, SIGNAL (released()),this, SLOT (btnPressed()));
-      connect(ui->pushButton_13, SIGNAL (released()),this, SLOT (btnPressed()));
-      connect(ui->pushButton_14, SIGNAL (released()),this, SLOT (btnPressed()));
-      connect(ui->pushButton_15, SIGNAL (released()),this, SLOT (btnPressed()));
-      connect(ui->pushButton_16, SIGNAL (released()),this, SLOT (btnPressed()));
-      connect(ui->pushButton_17, SIGNAL (released()),this, SLOT (btnPressed()));
-      connect(ui->pushButton_18, SIGNAL (released()),this, SLOT (btnPressed()));
-      connect(ui->pushButton_19, SIGNAL (released()),this, SLOT (btnPressed()));
-      connect(ui->pushButton_20, SIGNAL (released()),this, SLOT (btnPressed()));
-      connect(ui->pushButton_21, SIGNAL (released()),this, SLOT (btnPressed()));
-      connect(ui->pushButton_22, SIGNAL (released()),this, SLOT (btnPressed()));
-      connect(ui->pushButton_23, SIGNAL (released()),this, SLOT (btnPressed()));
-      connect(ui->pushButton_24, SIGNAL (released()),this, SLOT (btnPressed()));
-      connect(ui->pushButton_25, SIGNAL (released()),this, SLOT (btnPressed()));
+      for (int i = 0; i < 5 ; ++i) {
+          for (int j = 0; j < 5 ; ++j) {
+              QPushButton* button = new QPushButton(this);
+              button->setGeometry(3+i*95,j*95,91,81);
+              connect(button,SIGNAL(clicked()),this,SLOT(btnPressed()));
+              btnList.push_back(button);
+          }
+      }
+
+     qDebug()<<btnList;
 
   }
 
@@ -50,6 +42,8 @@
   void MainWindow::btnPressed()
   {
 
+    QPushButton* sender = static_cast<QPushButton*>(QObject::sender());
+
     QString program = "C:\\Users";
     QStringList arguments;
     arguments << "-style" << "fusion";
@@ -58,11 +52,70 @@
     QProcess::startDetached("explorer",  arguments);
 
 
-    QPixmap pixmap("C:\\Users\\Rich\\Desktop\\lab_fol\\2nd.jpg");
+
+    QPixmap pixmap("C:\\Users\\Rich\\Desktop\\fold\\1st.jfif");
     QIcon ButtonIcon(pixmap);
-    ui->pushButton->setIcon(ButtonIcon);
-    //ui->pushButton->setStyleSheet("C:\\Users\\Rich\\Desktop\\lab_fol\\2nd.jpg");
-    ui->pushButton->setIconSize(QSize(200,200));
+
+    sender->setIcon(ButtonIcon);
+    sender->setStyleSheet("C:\\Users\\Rich\\Desktop\\fold\\1st.jfif");
+    sender->setIconSize(QSize(200,200));
+
+
+  }
+
+  int MainWindow::jsonParse()
+  {
+
+    QFile file("C:\\Users\\Rich\\Desktop\\fold\\test.json");
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        qDebug() << "Could not open the file" << file.fileName() << "for reading:" << file.errorString();
+        return 1;
+    }else
+    {
+        qDebug()<<"File's been open sucsessfuly";
+    }
+
+    QByteArray jsonData = file.readAll();
+    if (file.error() != QFile::NoError)
+    {
+        qDebug() << QString("Failed to read from file %1, error: %2").arg(file.fileName()).arg(file.errorString());
+        return 2;
+    }
+
+    if (jsonData.isEmpty())
+    {
+        qDebug() << "No data was currently available for reading from file" << file.fileName();
+        return 3;
+    } else
+    {
+       qDebug()<<jsonData;
+    }
+
+
+    QJsonDocument document = QJsonDocument::fromJson(jsonData);
+    if (!document.isObject())
+    {
+        qDebug() << "Document is not an object";
+        return 4;
+    }
+
+    QJsonObject object = document.object();
+    QJsonValue jsonValue = object.value("id");
+
+    if (jsonValue.isUndefined())
+    {
+        qDebug() << "Key id does not exist";
+        return 5;
+    }
+
+    if (!jsonValue.isString())
+    {
+        qDebug() << "Value not string";
+        return 6;
+    }
+
+        qDebug() << jsonValue.toString()<< "+";
 
 
   }
