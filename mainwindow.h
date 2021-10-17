@@ -4,6 +4,11 @@
 #include <QMainWindow>
 #include <QPushButton>
 #include <QGridLayout>
+#include <QByteArray>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
+
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -15,6 +20,8 @@ class MainWindow : public QMainWindow
 
 public:
     QList<QPushButton*> btnList;
+    QJsonArray jarray;
+    QStringList pathmass;
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
@@ -24,5 +31,7 @@ private:
 public slots:
     void btnPressed();
     int jsonParse();
+    void btnsInsertStart();
+    void startApp();
 };
 #endif // MAINWINDOW_H

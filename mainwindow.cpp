@@ -4,10 +4,13 @@
 #include <QProcess>
 #include <QDebug>
 
+#include <QMessageBox>
 #include <QFile>
+#include <QFileDialog>
 #include <QByteArray>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QJsonArray>
 #include <QDebug>
 
 
@@ -22,17 +25,17 @@
       , ui(new Ui::MainWindow)
   {
       ui->setupUi(this);
+      window()->setGeometry(300,300,495,500);
 
       for (int i = 0; i < 5 ; ++i) {
           for (int j = 0; j < 5 ; ++j) {
               QPushButton* button = new QPushButton(this);
-              button->setGeometry(3+i*95,j*95,91,81);
+              button->setGeometry(3+i*95,22+j*95,91,81);
               connect(button,SIGNAL(clicked()),this,SLOT(btnPressed()));
               btnList.push_back(button);
+              qDebug()<<btnList[j];
           }
       }
-
-     qDebug()<<btnList;
 
   }
 
@@ -44,27 +47,21 @@
 
     QPushButton* sender = static_cast<QPushButton*>(QObject::sender());
 
-    QString program = "C:\\Users";
-    QStringList arguments;
-    arguments << "-style" << "fusion";
-    QProcess *myProcess = new QProcess();
-    myProcess->start(program, arguments);
-    QProcess::startDetached("explorer",  arguments);
+    QString filter = "Image File (*.img) ;; JPEG File (*.jpg) ;; PNG File (*.png)";
+    QString fileName = QFileDialog::getOpenFileName(this,"Open a file","C:\\",filter);
+    qDebug()<<fileName;
 
-
-
-    QPixmap pixmap("C:\\Users\\Rich\\Desktop\\fold\\1st.jfif");
+    QPixmap pixmap(fileName);
     QIcon ButtonIcon(pixmap);
 
     sender->setIcon(ButtonIcon);
-    sender->setStyleSheet("C:\\Users\\Rich\\Desktop\\fold\\1st.jfif");
     sender->setIconSize(QSize(200,200));
-
-
   }
 
   int MainWindow::jsonParse()
   {
+    QStringList roots;
+
 
     QFile file("C:\\Users\\Rich\\Desktop\\fold\\test.json");
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -89,7 +86,7 @@
         return 3;
     } else
     {
-       qDebug()<<jsonData;
+       //qDebug()<<jsonData;
     }
 
 
@@ -100,28 +97,43 @@
         return 4;
     }
 
-    QJsonObject object = document.object();
-    QJsonValue jsonValue = object.value("id");
+   // qDebug()<<document;
 
-    if (jsonValue.isUndefined())
-    {
-        qDebug() << "Key id does not exist";
-        return 5;
-    }
+    QJsonObject root = document.object();
 
-    if (!jsonValue.isString())
-    {
-        qDebug() << "Value not string";
-        return 6;
-    }
+    roots.append(root.keys().at(0) + ": " + root.value(root.keys().at(0)).toString());
 
-        qDebug() << jsonValue.toString()<< "+";
+    qDebug()<<roots;
 
+    QJsonValue jvaluemass = root.value("MASSIVE");
+
+    if(jvaluemass.isArray()){
+        jarray = jvaluemass.toArray();
+              for(int i = 0; i < jarray.count(); i++){
+                  QJsonObject subtree = jarray.at(i).toObject();
+                  pathmass.append(subtree.value("path").toString());
+                  qDebug()<<i;
+              }
+          }
+
+     qDebug()<<pathmass;
 
   }
 
+  void MainWindow::btnsInsertStart(){
 
+      for (int i = 0; i < jarray.count() ;++i ) {
+        QPixmap pixmap(pathmass[i]);
+        QIcon ButtonIcon(pixmap);
+        btnList[i]->setIcon(ButtonIcon);
+        btnList[i]->setIconSize(QSize(200,200));
+        qDebug()<<i;
+      }
+ }
 
+  void MainWindow::startApp(){
+
+  }
 
 
 
