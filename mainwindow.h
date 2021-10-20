@@ -8,6 +8,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
+#include <QFile>
 
 
 QT_BEGIN_NAMESPACE
@@ -21,6 +22,9 @@ class MainWindow : public QMainWindow
 public:
     QList<QPushButton*> btnList;
     QJsonArray jarray;
+    bool opLog = false;
+    int btnCount;
+    QByteArray jsonData;
     QStringList pathmass;
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
@@ -30,8 +34,9 @@ private:
     Ui::MainWindow *ui;
 public slots:
     void btnPressed();
-    int jsonParse();
-    void btnsInsertStart();
+    void btnPressedSave();
+    int jsonParse(QString);
     void startApp();
+    void openFile();
 };
 #endif // MAINWINDOW_H
