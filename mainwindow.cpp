@@ -48,10 +48,6 @@
               connect(button,SIGNAL(clicked()),this,SLOT(btnPressed()));
               btnList.push_back(button);
               btnCount++;
-              //qDebug()<<bname;
-              //qDebug()<<btnCount;
-             // qDebug()<<btnList[i];
-             // qDebug()<<btnList[j];
           }
       }
       qDebug()<<btnList;
@@ -74,7 +70,7 @@
 
 
     }else   {
-        file = "C://Users//Rich//Documents//pano//lab_fol//file.txt";
+        file = "C://Users//Rich//Documents//pano//lab_fol//file.json";
         jsonParse(file);
         startApp();
     }
@@ -181,8 +177,7 @@
         "\"MASSIVE\": ["
                      "]"
        "}").object();
-      QJsonArray mainArray = mainMassive["MASSIVE"].toArray(); //вычленяем массив json'ов
-
+      QJsonArray mainArray = mainMassive["MASSIVE"].toArray();
       for (int i = 0; i < jarray.count() ;++i) {
        QJsonObject tempObject = mainArray[i].toObject();
        tempObject.insert("path", pathmass[i]);
