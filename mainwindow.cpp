@@ -31,6 +31,12 @@
       btnSave->setGeometry(2,1,92,20);
       btnSave->setText("SAVE");
       connect(btnSave,SIGNAL(clicked()),this,SLOT(btnPressedSave()));
+
+      QPushButton* btnDefault = new QPushButton(this);
+      btnDefault->setGeometry(196,1,92,20);
+      btnDefault->setText("Default");
+      connect(btnDefault,SIGNAL(clicked()),this,SLOT(btnPressedDefault()));
+
       btnCount = 0;
 
       QPushButton* btnOpen = new QPushButton(this);
@@ -70,9 +76,9 @@
 
 
     }else   {
-        file = "C://Users//Rich//Documents//pano//lab_fol//file.json";
-        jsonParse(file);
-        startApp();
+      //  file = "C:\\pano_lab\\lab_fol\\default.json";
+      //  jsonParse(file);
+      //  startApp();
     }
 
   }
@@ -102,7 +108,9 @@
     }
     else if(opLog == false){
 
-        QMessageBox::warning(this,"Button Error","Firstly choose file by using open button");
+        QMessageBox::warning(this,"Button Error","Firstly choose file by using open button\n "
+                                                 "or use default button\n"
+                                                 "to use default settings");
 
     }
 
@@ -154,8 +162,8 @@
         jarray = jvaluemass.toArray();
         qDebug()<<jarray;
               for(int i = 0; i < jarray.count(); i++){
-                  QJsonObject subtree = jarray.at(i).toObject();
-                  pathmass.append(subtree.value("path").toString());
+                  QJsonObject tempObj = jarray.at(i).toObject();
+                  pathmass.append(tempObj.value("path").toString());
                   qDebug()<<i;
               }
           }
@@ -191,7 +199,10 @@
 
       QFile file;
       QString filter = "JSON File (*.json) ;; TXT file (*.txt)";
-      QString fileSet = QFileDialog::getOpenFileName(this,"Open a file","C:\\",filter);
+      QFileDialog testDia;
+      testDia.setAcceptMode(QFileDialog::AcceptSave);
+      QString fileSet = testDia.getSaveFileName(this,"Open a file","C:\\",filter);
+      //QString fileSet = QFileDialog (this,"Open a file","C:\\",filter);
 
       file.setFileName(fileSet);
       file.open(QIODevice::WriteOnly | QIODevice::Text);
@@ -201,6 +212,18 @@
       file.close();
 
   }
+
+  void MainWindow::btnPressedDefault(){
+
+      opLog = true;
+      QString file;
+      file = "C:\\pano_lab\\lab_fol\\default.json";
+      jsonParse(file);
+      startApp();
+
+
+  }
+
   MainWindow::~MainWindow()
   {
       delete ui;

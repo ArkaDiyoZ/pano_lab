@@ -33,6 +33,7 @@ public:
 private:
     Ui::MainWindow *ui;
 public slots:
+    void btnPressedDefault();
     void btnPressed();
     void btnPressedSave();
     int jsonParse(QString);
